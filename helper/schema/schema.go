@@ -13,6 +13,7 @@ package schema
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"reflect"
 	"regexp"
@@ -22,6 +23,7 @@ import (
 
 	"github.com/hashicorp/terraform/config"
 	"github.com/hashicorp/terraform/terraform"
+	"github.com/kr/pretty"
 	"github.com/mitchellh/copystructure"
 	"github.com/mitchellh/mapstructure"
 )
@@ -1605,7 +1607,9 @@ func (m schemaMap) validatePrimitive(
 	}
 
 	if schema.ValidateFunc != nil {
-		return schema.ValidateFunc(decoded, k)
+		warns, errs := schema.ValidateFunc(decoded, k)
+		// TODO: Wrap in AttributeError
+		return warns, errs
 	}
 
 	return nil, nil
